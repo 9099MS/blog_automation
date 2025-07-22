@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>티스토리 자동 포스팅 프로그램 사용법</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        code {
+            background-color: #e9ecef;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .step {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 티스토리 자동 포스팅 프로그램 사용법</h1>
+        <p>안녕하세요! 이 프로그램을 사용해주셔서 감사합니다.</p>
+
+        <div class="step">
+            <h2>1. 실행 전 준비사항 (최초 1회)</h2>
+            <p>프로그램을 처음 실행하기 전에, 아래의 준비를 꼭 마쳐주세요.</p>
+            <ul>
+                <li><b>Chrome 브라우저 설치:</b> 이 프로그램은 Chrome 브라우저를 이용해 작동합니다. 컴퓨터에 Chrome이 설치되어 있는지 확인해주세요.</li>
+                <li><b><code>.env</code> 파일 수정:</b> 함께 제공된 <code>.env</code> 파일을 메모장으로 열어, <code>""</code> 안에 자신의 정보를 정확하게 입력하고 저장해주세요.
+                    <ul>
+                        <li><code>TISTORY_ID</code>: 티스토리 로그인 아이디 (이메일)</li>
+                        <li><code>TISTORY_PW</code>: 티스토리 로그인 비밀번호</li>
+                        <li><code>TISTORY_BLOG_URL</code>: "sporg.tistory.com"과 같은 블로그 주소</li>
+                        <li><code>GOOGLE_API_KEY</code>, <code>OPENAI_API_KEY</code> 등: 사용하려는 AI의 API 키</li>
+                    </ul>
+                </li>
+                <li><b><code>prompt.md</code> 파일 수정 (선택 사항):</b>
+                    AI의 글쓰기 스타일을 변경하고 싶다면, <code>prompt.md</code> 파일을 열어 지시문을 자유롭게 수정하세요.
+                </li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h2>2. 프로그램 실행</h2>
+            <ol>
+                <li><code>app.exe</code> 파일을 더블클릭하여 실행하세요. (잠시 후 웹 브라우저가 자동으로 열립니다.)</li>
+                <li>만약 브라우저가 자동으로 열리지 않으면, 직접 웹 브라우저를 열고 주소창에 <a href="http://127.0.0.1:5001" class="button">http://127.0.0.1:5001</a> 을 입력하여 접속하세요.</li>
+                <li>화면에 나타난 옵션을 원하는 대로 선택하고 '포스팅 시작하기' 또는 '스케줄 등록하기' 버튼을 누르면 자동 포스팅이 시작됩니다.</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h2>3. 프로그램 종료</h2>
+            <p>프로그램은 백그라운드에서 계속 실행되므로, 사용이 끝나면 직접 종료해주어야 합니다.</p>
+            <ol>
+                <li>키보드에서 <code class="highlight">Ctrl</code> + <code class="highlight">Shift</code> + <code class="highlight">Esc</code> 키를 함께 눌러 <b>작업 관리자</b>를 엽니다.</li>
+                <li>'프로세스' 탭 (또는 '세부 정보' 탭) 목록에서 <b><code>app.exe</code></b>를 찾습니다.</li>
+                <li><code>app.exe</code>를 마우스 오른쪽 버튼으로 클릭한 후, <b>'작업 끝내기'</b> (또는 '프로세스 끝내기')를 선택하여 프로그램을 완전히 종료합니다.</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

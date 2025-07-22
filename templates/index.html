@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>티스토리 자동 포스팅</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6; color: #333; background-color: #f4f7f6;
+            margin: 0; padding: 2rem;
+        }
+        .container {
+            max-width: 800px; margin: 2rem auto; padding: 2.5rem;
+            background-color: #ffffff; border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); text-align: center;
+        }
+        h1 { color: #2c3e50; font-weight: 600; margin-bottom: 1rem; }
+        
+        form { margin-top: 1.5rem; }
+        .form-section {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.0rem;
+            margin-bottom: 1.0rem;
+            text-align: left;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.1rem;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            font-weight: 600; display: block;
+            margin-bottom: 0.5rem; color: #01702f;
+        }
+        select, input[type="text"], input[type="number"], button {
+            width: 100%; padding: 12px; border-radius: 5px;
+            border: 1px solid #ccc; font-size: 16px; box-sizing: border-box;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            color: #1c2f42;
+        }
+        button {
+            background-color: #3498db; color: white; border: none;
+            cursor: pointer; transition: background-color 0.3s, transform 0.1s;
+            font-weight: 600; font-size: 18px; padding: 15px;
+            margin-top: 1rem;
+        }
+        button:hover { background-color: #2980b9; }
+        button:active { transform: scale(0.99); }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        #log-container {
+            margin-top: 2rem; background-color: #2c3e50; color: #ecf0f1;
+            font-family: 'Courier New', Courier, monospace; font-size: 14px;
+            padding: 1.5rem; border-radius: 8px; text-align: left;
+            height: 300px; overflow-y: auto; white-space: pre-wrap;
+            word-wrap: break-word; display: none;
+        }
+        #custom-topic-group {
+            display: none;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .schedule-info {
+            background-color: #fffbe6; border: 1px solid #ffe58f;
+            padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;
+        }
+        .stop-btn { background-color: #e74c3c; }
+        .stop-btn:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 티스토리 자동 포스팅</h1>
+
+        {% if schedule_status %}
+        <div class="schedule-info">
+            <p><strong>현재 스케줄이 실행 중입니다.</strong></p>
+            <p>{{ schedule_status }}</p>
+            <form action="/stop_schedule" method="post" style="margin-top: 1rem;">
+                <button class="stop-btn" type="submit">🚫 스케줄 중지하기</button>
+            </form>
+        </div>
+        {% else %}
+        <form id="automation-form" action="/run" method="post">
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group"> 
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="test_mode" value="true"> 테스트 모드</label>
+                        </div>
+                    </div>   
+                    <div class="form-group">  
+                        <div class="checkbox-group">
+                             <label><input type="checkbox" name="include_image" value="true" checked> 이미지 포함</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-row"> 
+                    <div class="form-group">
+                        <label for="topic">블로그 주제</label>
+                        <select id="topic" name="topic">                            
+                            <option value="custom">직접 입력</option>
+                            <option value="random" selected>무작위</option>
+                            <option value="car">자동차</option>
+                            <option value="government_grant">정부지원금</option>
+                            <option value="lifestyle">생활정보</option>
+                            <option value="travel">여행/축제정보</option>
+                            <option value="issue">최신이슈</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ai-model">AI 모델</label>
+                        <select id="ai-model" name="ai_model">
+                            <option value="gemini" selected>Gemini</option>
+                            <option value="chatgpt">ChatGPT</option>
+                            <option value="claude">Claude</option>
+                            <option value="perplexity">Perplexity</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="custom-topic-group">
+                    <input type="text" id="custom_topic" name="custom_topic" placeholder="원하는 주제를 입력하세요...">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group" style="width: 100%;">
+                    <label for="seo_keywords">SEO 키워드 (쉼표로 구분)</label>
+                    <input type="text" id="seo_keywords" name="seo_keywords" placeholder="예: 2025년, 자동차, 보조금...">
+                </div>
+            </div>
+            
+        
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>실행 방식</label>
+                        <div class="checkbox-group">
+                            <label><input type="radio" name="run_type" value="now" checked> 즉시 실행</label>
+                            <label><input type="radio" name="run_type" value="schedule"> 스케줄 예약</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="schedule-group" style="display: none;">
+                        <label for="interval">실행 주기 (분)</label>
+                        <input type="number" id="interval" name="interval" value="60" min="1">
+                    </div>
+                </div>
+            </div>
+
+            <button id="submit-btn" type="submit">🚀 포스팅 시작하기</button>
+        </form>
+        {% endif %}
+
+        <div id="log-container"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('automation-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const logContainer = document.getElementById('log-container');
+        
+        const topicSelect = document.getElementById('topic');
+        const customTopicGroup = document.getElementById('custom-topic-group');
+        
+        const runTypeRadios = document.querySelectorAll('input[name="run_type"]');
+        const scheduleGroup = document.getElementById('schedule-group');
+
+        topicSelect.addEventListener('change', function() {
+            customTopicGroup.style.display = this.value === 'custom' ? 'block' : 'none';
+        });
+
+        runTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                scheduleGroup.style.display = this.value === 'schedule' ? 'block' : 'none';
+                submitBtn.innerText = this.value === 'schedule' ? '🗓️ 스케줄 등록하기' : '🚀 포스팅 시작하기';
+            });
+        });
+
+        let eventSource;
+        if(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.innerText = '🏃 실행 중...';
+                logContainer.style.display = 'block';
+                logContainer.innerHTML = '서버에 작업을 요청하는 중...';
+
+                const formData = new FormData(form);
+                fetch('/run', {
+                    method: 'POST',
+                    body: formData,
+                }).then(response => response.json())
+                  .then(data => {
+                      logContainer.innerHTML = data.message + '\n';
+                      if (data.status === 'scheduled') {
+                          // 스케줄 등록 후 페이지를 새로고침하여 '중지' 버튼을 표시
+                          window.location.reload();
+                      } else if (data.status === 'running') {
+                          startEventSource();
+                      } else {
+                          submitBtn.disabled = false;
+                      }
+                  });
+            });
+        }
+
+        function startEventSource() {
+            if (eventSource) { eventSource.close(); }
+            eventSource = new EventSource('/stream');
+
+            eventSource.onmessage = function(event) {
+                logContainer.innerHTML += event.data + '\n';
+                if (event.data.includes("--- 모든 작업이 종료되었습니다 ---")) {
+                    eventSource.close();
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = document.querySelector('input[name="run_type"]:checked').value === 'schedule' ? '🗓️ 스케줄 등록하기' : '🚀 포스팅 시작하기';
+                    }
+                }
+                logContainer.scrollTop = logContainer.scrollHeight;
+            };
+
+            eventSource.onerror = function() {
+                logContainer.innerHTML += '오류: 서버와의 연결이 끊어졌습니다.\n';
+                eventSource.close();
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                }
+            };
+        }
+    </script>
+</body>
+</html>
